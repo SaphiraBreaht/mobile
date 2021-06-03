@@ -1,0 +1,17 @@
+.inputField button{
+  opacity: 0.6;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+.inputField button.active{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+li{
+  list-style-type:none;
+}
+
+ul {
+    padding-inline-start: 8px;
+}
