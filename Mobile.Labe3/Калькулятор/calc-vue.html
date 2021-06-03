@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор</title>
+</head>
+<body>
+    <div id="calculator">
+        <div class="grid">
+            <input class="input" type="text" v-model="result" placeholder="0" readonly>
+            <button v-on:click="input(num)" v-for="num in numbers"> {{num}}</button>
+            <button v-on:click="op(oper)" class="znak" v-for="oper in operations"> {{oper}}</button>
+            <button v-on:click="point()" class="znak">.</button>
+            <button v-on:click="calculate()" class="equal">=</button>
+            <button v-on:click="clear()" class="clean">C</button>
+            <button v-on:click="del()" class="back">&larr;</button>
+        </div>
+    </div>
+
+    <script src="vue.js"></script>
+</body>
+</html>
