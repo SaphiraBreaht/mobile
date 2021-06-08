@@ -5,35 +5,35 @@
             <TabViewItem>
                 <StackLayout backgroundColor="false" width="100%" height="100%">
                     <GridLayout columns="*,*,*,*" rows="*,*,*,*,*,*" width="100%">
-						<Label textWrap="true" v-model="result" row="0" col="0" colSpan="4"/>/>
-						<Button class="clean" @tap="clean()" text="AC" row="1" col="0" colSpan="2"/>
-						<Button class="back" @tap="del()" text="DEL" row="1" col="2" colSpan="2"/>
-						<Button class="znak" @tap="input('7')" text="7" row="2" col="0"/> 
-						<Button class="znak" @tap="input('8')" text="8" row="2" col="1"/>
-						<Button class="znak" @tap="input('9')" text="9" row="2" col="2"/>
-						<Button @tap="input('*')" text="*" row="2" col="3"/>
-						<Button class="znak" @tap="input('4')" text="4" row="3" col="0"/>
-						<Button class="znak" @tap="input('5')" text="5" row="3" col="1"/>
-						<Button class="znak" @tap="input('6')" text="6" row="3" col="2"/>
-						<Button @tap="input('/')" text="/" row="3" col="3"/>
-						<Button class="znak" @tap="input('1')" text="1" row="4" col="0"/>
-						<Button class="znak" @tap="input('2')" text="2" row="4" col="1"/>
-						<Button class="znak" @tap="input('3')" text="3" row="4" col="2"/>
-						<Button @tap="input('-')" text="-" row="4" col="3"/>
-						<Button @tap="input('.')" text="." row="5" col="0"/>
-						<Button class="znak" @tap="input('0')" text="0" row="5" col="1"/>
-						<Button class="equal" @tap="equal()" text="=" row="5" col="2"/>
-						<Button @tap="input('+')" text="+" row="5" col="3"/>
+						<Label textWrap="true" hint='0' v-model="result" row="0" col="0" colSpan="4"/>/>
+						<Button @tap="clean()" text="AC" row="1" col="0" colSpan="2"/>
+						<Button @tap="del()" text="DEL" row="1" col="2" colSpan="2"/>
+						<Button @tap="inputNum('7')" text="7" row="2" col="0"/> 
+						<Button @tap="inputNum('8')" text="8" row="2" col="1"/>
+						<Button @tap="inputNum('9')" text="9" row="2" col="2"/>
+						<Button @tap="inputNum('*')" text="*" row="2" col="3"/>
+						<Button @tap="inputNum('4')" text="4" row="3" col="0"/>
+						<Button @tap="inputNum('5')" text="5" row="3" col="1"/>
+						<Button @tap="inputNum('6')" text="6" row="3" col="2"/>
+						<Button @tap="inputNum('/')" text="/" row="3" col="3"/>
+						<Button @tap="inputNum('1')" text="1" row="4" col="0"/>
+						<Button @tap="inputNum('2')" text="2" row="4" col="1"/>
+						<Button @tap="inputNum('3')" text="3" row="4" col="2"/>
+						<Button @tap="inputNum('-')" text="-" row="4" col="3"/>
+						<Button @tap="inputNum('.')" text="." row="5" col="0"/>
+						<Button @tap="inputNum('0')" text="0" row="5" col="1"/>
+						<Button @tap="equal()" text="=" row="5" col="2"/>
+						<Button @tap="inputNum('+')" text="+" row="5" col="3"/>
                     </GridLayout>
                 </StackLayout>
             </TabViewItem>
         </TabView>
     </Page>
 </template>
+
 <script>
-	let invalid = 'invalid input';
-	let operation = false; 
-    let point = false;
+const op = ['+','-','*','/'];
+const num = [1,2,3,4,5,6,7,8,9,0]
     export default {
         data() {
             return {
@@ -41,27 +41,27 @@
             }
         },
         methods: {
-            input: function(char) {
-				 this.result = this.result.toString(); 
-                 if (this.result === invalid){ 
-                     this.result = ''; 
+            inputNum: function (char) {
+                this.result = this.result.toString();
+                if(op.includes(char)){
+                    if(this.result.slice(-1) === op.find(() => char)){
+                        this.result = this.result.slice(0,-1) + char;
+                    }
+                    else {
+                    this.result = this.result.toString();
+                    this.result += char; 
+                    }
                 } 
-                if ((char === '+' || char === '/' || char === '-' || char === '*') && operation === false){
-                    operation = true; 
-                    point = false; 
-                    this.result += char; 
-                }
-				else if ((char === '0' || char === '1' || char === '2' || char === '3' || char === '4' || 
-                          char === '5' || char === '6' || char === '7' || char === '8' || char === '9')){ 
-                    operation = false; 
-                    this.result += char; 
-                }
-				else if(char === '.' && point === false){ 
-                    operation = true; 
-                    point = true; 
+                else {
+                    this.result = this.result.toString();
                     this.result += char; 
                 }
             },
+           /* inputOper: function(char) {
+                this.result = this.result.toString();
+                
+                console.log(this.result.slice(0,-1));
+            },  */
 			clean: function() {
                 this.result = "";
             },
