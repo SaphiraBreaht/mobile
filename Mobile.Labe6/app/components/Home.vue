@@ -10,28 +10,18 @@
                     </StackLayout>
                     <ScrollView>
                         <StackLayout>
-                            <Button text="Ханты-Мансийск" padding="10"
-                                @tap="KhM()" />
-                            <Button text="Тюмень" padding="10" @tap="Tym()" />
-                            <Button text="Урай" padding="10" @tap="Uray()" />
-                            <Button text="Сочи" padding="10" @tap="Sochi()" />
-                            <Button text="Кисловодск" padding="10"
-                                @tap="KisK()" />
-                            <Button text="Москва" padding="10"
-                                @tap="Mosc()" />
-                            <Button text="Норильск" padding="10"
-                                @tap="Noril()" />
-                            <Button text="Мурманск" padding="10"
-                                @tap="Murm()" />
-                            <Button text="Заполярный" padding="10"
-                                @tap="Zapol()" />
-                            <Button text="Кемерово" padding="10"
-                                @tap="Kem()" />
-                            <Button text="Анадырь" padding="10"
-                                @tap="Anad()" />
-                            <Label text="Закрыть" color="lightgray"
-                                padding="10" style="horizontal-align: center"
-                                @tap="onCloseDrawerTap" />
+                            <Button text="Ханты-Мансийск" value="Ханты-Мансийск" padding="10" @tap="Output('Ханты-Мансийск')" />
+                            <Button text="Тюмень" padding="10"  @tap="Output('Тюмень')" />
+                            <Button text="Урай" padding="10"  @tap="Output('Урай')" />
+                            <Button text="Сочи" padding="10"  @tap="Output('Сочи')" />
+                            <Button text="Кисловодск" padding="10" @tap="Output('Кисловодск')" />
+                            <Button text="Москва" padding="10" @tap="Output('Москва')" />
+                            <Button text="Норильск" padding="10" @tap="Output('Норильск')" />
+                            <Button text="Мурманск" padding="10"  @tap="Output('Мурманск')" />
+                            <Button text="Заполярный" padding="10" @tap="Output('Заполярный')" />
+                            <Button text="Кемерово" padding="10" @tap="Output('Кемерово')" />
+                            <Button text="Анадырь" padding="10"  @tap="Output('Анадырь')" />
+                            <Label text="Закрыть" color="lightgray"  padding="10" style="horizontal-align: center" @tap="onCloseDrawerTap" />
                         </StackLayout>
                     </ScrollView>
                 </StackLayout>
@@ -57,9 +47,12 @@
     import Vue from "nativescript-vue";
     import RadSideDrawer from "nativescript-ui-sidedrawer/vue";
     Vue.use(RadSideDrawer);
-    import {Http} from "@nativescript/core";
+    import {
+        Http
+    } from "@nativescript/core";
     import * as http from "@nativescript/core/http";
-    import * as ApplicationSettings from "@nativescript/core/application-settings";
+    import *
+    as ApplicationSettings from "@nativescript/core/application-settings";
 
     export default {
         data() {
@@ -80,405 +73,60 @@
             onCloseDrawerTap() {
                 this.$refs.drawer.nativeView.closeDrawer();
             },
-            KhM() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Ханты-Мансийск&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
+            Output: function(city) {
+                if (city) {
+                    const url = encodeURI(
+                        "https://api.openweathermap.org/data/2.5/weather?q=" +
+						 city +
+                        "&appid=29876907afc8b79c1e64ff345dd64baa"
                     );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
+                    http.request({
+                        method: "GET",
+                        url: url,
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    }).then(result => {
+                        console.log(result);
+                        this.result = result.content.toJSON();
+                        this.name = this.result.name;
+                        this.speed = this.result.wind.speed;
+                        this.temp = CalculateTemperature(this.result.main.temp);
+                        this.temp_max = CalculateTemperature(this.result.main.temp_max);
+                        this.temp_min = CalculateTemperature(this.result.main.temp_min);
+                        this.pressure = CalculatePressure(this.result.main.pressure);
+                        console.log(this.result);
+                    });
+                } else {
+                    const url = encodeURI(
+                        "https://api.openweathermap.org/data/2.5/weather?q=" +
+                        this.name +
+                        "&appid=29876907afc8b79c1e64ff345dd64baa"
                     );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    InCelsius();
-                    console.log(this.result);
-                });
+                    http.request({
+                        method: "GET",
+                        url: url,
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    }).then(result => {
+                        console.log(result);
+                        this.result = result.content.toJSON();
+                        this.name = this.result.name;
+                        this.speed = this.result.wind.speed;
+                        this.temp = CalculateTemperature(this.result.main.temp);
+                        this.temp_max = CalculateTemperature(this.result.main.temp_max);
+                        this.temp_min = CalculateTemperature(this.result.main.temp_min);
+                        this.pressure = CalculatePressure(this.result.main.pressure);
+                        console.log(this.result);
+                    });
+                }
             },
-            Tym() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Тюмень&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
+            CalculateTemperature(temp) {
+                Math.round(temp - 273.15, 1);
             },
-            Uray() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Урай&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
-            },
-            Sochi() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Сочи&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
-            },
-            KisK() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Кисловодск&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
-            },
-            Mosc() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Москва&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
-            },
-            Noril() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Норильск&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
-            },
-            Murm() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Мурманск&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
-            },
-            Zapol() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Заполярный&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
-            },
-            Kem() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Кемерово&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
-            },
-            Anad() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=Анадырь&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
-            },
-
-            Output() {
-                const url = encodeURI(
-                    "https://api.openweathermap.org/data/2.5/weather?q=" +
-                    this.name +
-                    "&appid=29876907afc8b79c1e64ff345dd64baa"
-                );
-                http.request({
-                    method: "GET",
-                    url: url,
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
-                }).then(result => {
-                    console.log(result);
-                    this.result = result.content.toJSON();
-                    this.temp = Math.round(this.result.main.temp -
-                        273.15, 1);
-                    this.temp_max = Math.round(
-                        this.result.main.temp_max - 273.15,
-                        1
-                    );
-                    this.temp_min = Math.round(
-                        this.result.main.temp_min - 273.15,
-                        1
-                    );
-                    this.pressure = Math.round(
-                        this.result.main.pressure *
-                        0.7500637554192,
-                        1
-                    );
-                    this.name = this.result.name;
-                    this.speed = this.result.wind.speed;
-                    console.log(this.result);
-                });
+            CalculatePressure(pressure) {
+                Math.round(pressure * 0.7500637554192, 1);
             }
         }
     };
